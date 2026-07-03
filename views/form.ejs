@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Information Form</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Personal Information Form</h1>
+    <p class="subtitle">Please provide your details below</p>
+
+    <!-- Error Summary Alert -->
+    <% if (errors && errors.length > 0) { %>
+      <div class="error-alert">
+        <h3>Please fix the following errors:</h3>
+        <ul>
+          <% errors.forEach(error => { %>
+            <li><%= error.msg %></li>
+          <% }); %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/submit" novalidate>
+      <!-- Full Name Field -->
+      <div class="form-group">
+        <label for="fullName" class="required">Full Name</label>
+        <input
+          type="text"
+          id="fullName"
+          name="fullName"
+          placeholder="John Doe"
+          value="<%= formData.fullName || '' %>"
+          class="<%= errorsByField && errorsByField.fullName ? 'field-error' : '' %>"
+          required
+        >
+        <% if (errorsByField && errorsByField.fullName) { %>
+          <span class="error-message"><%= errorsByField.fullName %></span>
+        <% } %>
+      </div>
+
+      <!-- Email Address Field -->
+      <div class="form-group">
+        <label for="email" class="required">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="john@example.com"
+          value="<%= formData.email || '' %>"
+          class="<%= errorsByField && errorsByField.email ? 'field-error' : '' %>"
+          required
+        >
+        <% if (errorsByField && errorsByField.email) { %>
+          <span class="error-message"><%= errorsByField.email %></span>
+        <% } %>
+      </div>
+
+      <!-- Age Field -->
+      <div class="form-group">
+        <label for="age" class="required">Age</label>
+        <input
+          type="number"
+          id="age"
+          name="age"
+          placeholder="25"
+          value="<%= formData.age || '' %>"
+          class="<%= errorsByField && errorsByField.age ? 'field-error' : '' %>"
+          min="18"
+          max="120"
+          required
+        >
+        <% if (errorsByField && errorsByField.age) { %>
+          <span class="error-message"><%= errorsByField.age %></span>
+        <% } %>
+      </div>
+
+      <!-- Phone Number Field -->
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="+1 (555) 123-4567"
+          value="<%= formData.phone || '' %>"
+          class="<%= errorsByField && errorsByField.phone ? 'field-error' : '' %>"
+        >
+        <p class="subtitle" style="margin-top: 4px;">Optional • Format: +1 (555) 123-4567 or similar</p>
+        <% if (errorsByField && errorsByField.phone) { %>
+          <span class="error-message"><%= errorsByField.phone %></span>
+        <% } %>
+      </div>
+
+      <!-- Biography Field -->
+      <div class="form-group">
+        <label for="biography">Biography</label>
+        <textarea
+          id="biography"
+          name="biography"
+          placeholder="Tell us about yourself... (max 500 characters)"
+          class="<%= errorsByField && errorsByField.biography ? 'field-error' : '' %>"
+          maxlength="500"
+        ><%= formData.biography || '' %></textarea>
+        <div class="char-count">
+          <span id="charCount">0</span> / 500 characters
+        </div>
+        <% if (errorsByField && errorsByField.biography) { %>
+          <span class="error-message"><%= errorsByField.biography %></span>
+        <% } %>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="button-group">
+        <button type="submit">Submit Form</button>
+        <button type="reset">Clear Form</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    /**
+     * Character counter for biography field
+     */
+    const bioTextarea = document.getElementById('biography');
+    const charCount = document.getElementById('charCount');
+
+    if (bioTextarea && charCount) {
+      // Update on input
+      bioTextarea.addEventListener('input', function() {
+        const count = this.value.length;
+        charCount.textContent = count;
+
+        // Add warning styling when approaching limit
+        if (count >= 400) {
+          charCount.parentElement.classList.add('warning');
+        } else {
+          charCount.parentElement.classList.remove('warning');
+        }
+      });
+
+      // Initialize count on page load
+      charCount.textContent = bioTextarea.value.length;
+    }
+
+    /**
+     * Optional: Add client-side validation feedback
+     */
+    const ageInput = document.getElementById('age');
+    if (ageInput) {
+      ageInput.addEventListener('blur', function() {
+        const age = parseInt(this.value);
+        if (this.value && (isNaN(age) || age < 18 || age > 120)) {
+          this.classList.add('field-error');
+        } else {
+          this.classList.remove('field-error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
